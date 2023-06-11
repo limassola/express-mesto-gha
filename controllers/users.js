@@ -15,7 +15,7 @@ const getUserById = (req, res) => {
       if (err.message === 'Not found') {
         res.status(404).send({ message: 'User not found' });
       } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
@@ -23,7 +23,7 @@ const getUserById = (req, res) => {
 const createUser = (req, res) => {
   User.create(req.body)
     .then((user) => res.status(201).send(user))
-    .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+    .catch((err) => res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 };
 
 const updateUserProfile = (req, res) => {
@@ -34,7 +34,7 @@ const updateUserProfile = (req, res) => {
       if (err.message === 'Not found') {
         res.status(404).send({ message: 'User not found' });
       } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
@@ -47,7 +47,7 @@ const updateUserAvatar = (req, res) => {
       if (err.message === 'Not found') {
         res.status(404).send({ message: 'User not found' });
       } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
