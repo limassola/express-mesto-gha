@@ -19,6 +19,6 @@ app.use((req, res, next) => {
 
 app.use(router);
 
-app.listen(3001, () => {
-  console.log('слушаю порт 3001');
+app.listen(3000, () => {
+  console.log('слушаю порт 3000');
 });
