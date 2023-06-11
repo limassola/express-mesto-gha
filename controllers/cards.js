@@ -15,7 +15,7 @@ const deleteCardByID = (req, res) => {
       if (err.message === 'Not found') {
         res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
       } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
@@ -26,7 +26,7 @@ const createCard = (req, res) => {
     owner: req.user._id,
   })
     .then((card) => res.status(201).send(card))
-    .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+    .catch((err) => res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 };
 
 const likeCard = (req, res) => {
@@ -36,7 +36,7 @@ const likeCard = (req, res) => {
       if (err.message === 'Not found') {
         res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
       } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
@@ -52,7 +52,7 @@ const dislikeCard = (req, res) => {
       if (err.message === 'Not found') {
         res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
       } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
