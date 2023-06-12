@@ -7,15 +7,16 @@ const getCards = (req, res) => {
 };
 
 const deleteCardByID = (req, res) => {
-  // eslint-disable-next-line no-shadow
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => new Error('Not found'))
     .then((card) => res.status(200).send(card))
     .catch((err) => {
-      if (err.message === 'Not found') {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      } else if (err.message === 'Not found') {
         res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
       } else {
-        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
@@ -26,7 +27,13 @@ const createCard = (req, res) => {
     owner: req.user._id,
   })
     .then((card) => res.status(201).send(card))
-    .catch((err) => res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Некорректные данные при создании карточки' });
+      } else {
+        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+      }
+    });
 };
 
 const likeCard = (req, res) => {
