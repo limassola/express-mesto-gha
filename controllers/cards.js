@@ -2,6 +2,7 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
+    .populate(['owner', 'likes'])
     .then((cards) => res.status(200).send(cards))
     .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 };
@@ -45,7 +46,7 @@ const likeCard = (req, res) => {
         res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
       }
     })
-    .catch((err) => res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+    .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 };
 
 const dislikeCard = (req, res) => {
@@ -61,7 +62,7 @@ const dislikeCard = (req, res) => {
         res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
       }
     })
-    .catch((err) => res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+    .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 };
 
 module.exports = {

@@ -44,7 +44,7 @@ const updateUserProfile = (req, res) => {
       } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Некорректные данные при создании карточки' });
       } else {
-        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
@@ -60,7 +60,7 @@ const updateUserAvatar = (req, res) => {
       } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Некорректные данные при создании карточки' });
       } else {
-        res.status(400).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
+        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
       }
     });
 };
