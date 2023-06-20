@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router = require('./routes');
+const { createUser, login } = require('./controllers/users');
 
 const app = express();
 
@@ -16,7 +17,8 @@ app.use((req, res, next) => {
 
   next();
 });
-
+app.post('/signin', login);
+app.post('/signup', createUser);
 app.use(router);
 
 app.listen(3000, () => {
