@@ -1,77 +1,54 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const bcrypt = require('bcryptjs');
+const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
+    .catch(next);
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
-      } else if (err.message === 'Not found') {
-        res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-      }
-    });
+    .catch(next);
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   bcrypt.hash(String(req.body.password), 10)
     .then((hashedPassword) => {
       User.create({ ...req.body, password: hashedPassword })
         .then((user) => res.status(201).send(user))
-        .catch((err) => {
-          if (err.name === 'ValidationError') {
-            res.status(400).send({ message: 'Некорректные данные при создании карточки' });
-          } else {
-            res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-          }
-        });
+        .catch(next);
     });
 };
 
-const updateUserProfile = (req, res) => {
+const updateUserProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => new Error('Not found'))
     .then((updatedUser) => res.status(200).send(updatedUser))
-    .catch((err) => {
-      if (err.message === 'Not found') {
-        res.status(404).send({ message: 'User not found' });
-      } else if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Некорректные данные при создании карточки' });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-      }
-    });
+    .catch(next);
 };
 
-const updateUserAvatar = (req, res) => {
+const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => new Error('Not found'))
     .then((updatedUser) => res.status(200).send(updatedUser))
-    .catch((err) => {
-      if (err.message === 'Not found') {
-        res.status(404).send({ message: 'User not found' });
-      } else if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Некорректные данные при создании карточки' });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-      }
-    });
+    .catch(next);
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(403).send({ message: 'Введите данные' });
+    return;
+  }
+
   User.findOne({ email })
     .select('+password')
     .orFail(() => new Error('Not found'))
@@ -79,12 +56,28 @@ const login = (req, res, next) => {
       bcrypt.compare(String(password), user.password)
         .then((isValidUser) => {
           if (isValidUser) {
+            const jwt = jsonWebToken.sign({
+              _id: user.id,
+            // eslint-disable-next-line dot-notation
+            }, process.env['JWT_SECRET']);
+            res.cookie('jwt', jwt, {
+              maxAge: 36000,
+              httpOnly: true,
+              sameSite: true,
+            });
             res.send({ data: user.toJSON() });
           } else {
             res.status(403).send({ message: 'Неправильные данные' });
           }
         });
     })
+    .catch(next);
+};
+
+const getUserInfo = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => new Error('Not found'))
+    .then((user) => res.status(200).send(user))
     .catch(next);
 };
 
@@ -95,4 +88,5 @@ module.exports = {
   updateUserProfile,
   updateUserAvatar,
   login,
+  getUserInfo,
 };

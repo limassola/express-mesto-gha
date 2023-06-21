@@ -1,7 +1,11 @@
 // models/user.js
-
+const validators = require('validator');
 const mongoose = require('mongoose');
 
+function validator(v) {
+  const regex = /^(http||htps):\/\/[^ "]+$/;
+  return regex.test(v);
+}
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -21,11 +25,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: validator,
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validators: (value) => validators.isEmail(value),
+      message: 'Неправильный email',
+    },
   },
   password: {
     type: String,

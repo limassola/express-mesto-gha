@@ -1,7 +1,12 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { celebrate, Joi } = require('celebrate');
 const router = require('./routes');
 const { createUser, login } = require('./controllers/users');
+const errorHandler = require('./middlewares/error');
 
 const app = express();
 
@@ -10,16 +15,20 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 });
 
 app.use(express.json());
-app.use((req, res, next) => {
-  req.user = {
-    _id: '648244a88e37fec4f8fbd1e9', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
+app.use(cookieParser());
 
-  next();
-});
 app.post('/signin', login);
-app.post('/signup', createUser);
-app.use(router);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().uri(),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), createUser);
 
+app.use(router);
+app.use(errorHandler);
 app.listen(3000, () => {
 });
