@@ -1,11 +1,7 @@
 // models/user.js
-const validators = require('validator');
+const validator = require('validator');
 const mongoose = require('mongoose');
 
-function validator(v) {
-  const regex = /^(http||htps):\/\/[^ "]+$/;
-  return regex.test(v);
-}
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -25,14 +21,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    validate: validator,
+    validate: {
+      // eslint-disable-next-line object-shorthand, func-names
+      validator: function (value) {
+        const regex = /^(http|https):\/\/[^ "]+$/.test(value);
+        return value === '' || regex;
+      },
+      message: 'Невалидный email',
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
     validate: {
-      validators: (value) => validators.isEmail(value),
+      validator: (value) => validator.isEmail(value),
       message: 'Неправильный email',
     },
   },
