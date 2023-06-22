@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 // eslint-disable-next-line import/no-extraneous-dependencies
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const router = require('./routes');
 const { createUser, login } = require('./controllers/users');
 const errorHandler = require('./middlewares/error');
@@ -29,6 +29,7 @@ app.post('/signup', celebrate({
 }), createUser);
 
 app.use(router);
+app.use(errors());
 app.use(errorHandler);
 app.listen(3000, () => {
 });

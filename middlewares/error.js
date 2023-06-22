@@ -6,14 +6,13 @@ const AbstractError = require('../errors/abstract-error');
 
 const errorHandler = (err, req, res, next) => {
   let error;
-
-  if (err.statusCode === 404) {
+  if (err.code === 404) {
     error = new NotFoundError(err);
-  } else if (err.statusCode === 400) {
+  } else if (err.code === 400) {
     error = new CastError(err);
-  } else if (err.statusCode === 11000) {
+  } else if (err.code === 11000) {
     error = new DuplicateError(err);
-  } else if (err.statusCode === 409) {
+  } else if (err.code === 409) {
     error = new JWTError(err);
   } else {
     error = new AbstractError(err);
