@@ -46,12 +46,12 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(401).send({ message: 'Введите данные' });
+    res.status(401).send({ message: 'Введите данные' });
   }
 
   User.findOne({ email })
     .select('+password')
-    .orFail((err) => new InvalidAuth(err))
+    .orFail(() => new InvalidAuth('Неправильные данные'))
     .then((user) => {
       bcrypt.compare(String(password), user.password)
         .then((isValidUser) => {
@@ -68,7 +68,6 @@ const login = (req, res, next) => {
             res.send({ data: user.toJSON() });
           } else {
             res.status(401).send({ message: 'Неправильные данные' });
-            return;
           }
         });
     })

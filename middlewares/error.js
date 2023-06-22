@@ -12,7 +12,7 @@ const errorHandler = (err, req, res, next) => {
     error = new NotFoundError(err);
   } else if (err.code === 400) {
     error = new CastError(err);
-  } else if (err.code === 401) {
+  } else if (err.statusCode === 401) {
     error = new InvalidAuth(err);
   } else if (err.code === 11000) {
     error = new DuplicateError(err);
