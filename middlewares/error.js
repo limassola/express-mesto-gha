@@ -16,7 +16,7 @@ const errorHandler = (err, req, res, next) => {
     message = 'Invalid token';
   }
 
-  res.status(statusCode).send(message);
+  res.status(statusCode).send({message});
 };
 
 module.exports = errorHandler;
