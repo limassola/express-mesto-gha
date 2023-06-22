@@ -1,22 +1,26 @@
-const errorHandler = (err, req, res, next) => {
-  let statusCode = err.code || 500;
-  let message = err.message || 'Internal Server Error';
+const NotFoundError = require('../errors/not-found-error');
+const CastError = require('../errors/cast-error');
+const DuplicateError = require('../errors/duplicate-error');
+const JWTError = require('../errors/jwt-error');
+const AbstractError = require('../errors/abstract-error');
 
-  if (err.name === 'CastError') {
-    statusCode = 400;
-    message = 'Переданы некорректные данные';
-  } else if (err.name === 'ValidationError') {
-    statusCode = 400;
-    message = 'Некорректные данные при создании карточки';
-  } else if (err.code === 11000) {
-    statusCode = 409;
-    message = 'Email уже зарегистрирован';
-  } else if (err.name === 'JsonWebTokenError') {
-    statusCode = 401;
-    message = 'Invalid token';
+const errorHandler = (err, req, res, next) => {
+  let error;
+
+  if (err.statusCode === 404) {
+    error = new NotFoundError(err);
+  } else if (err.statusCode === 400) {
+    error = new CastError(err);
+  } else if (err.statusCode === 11000) {
+    error = new DuplicateError(err);
+  } else if (err.statusCode === 409) {
+    error = new JWTError(err);
+  } else {
+    error = new AbstractError(err);
   }
 
-  res.status(statusCode).send({message});
+  res.status(error.statusCode).send({ message: error.message });
+  next();
 };
 
 module.exports = errorHandler;
