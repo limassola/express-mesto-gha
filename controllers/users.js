@@ -2,6 +2,7 @@
 const bcrypt = require('bcryptjs');
 const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
+const InvalidAuth = require('../errors/invalid-auth');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -51,7 +52,7 @@ const login = (req, res, next) => {
 
   User.findOne({ email })
     .select('+password')
-    .orFail(() => new Error('Not found'))
+    .orFail((err) => new InvalidAuth(err))
     .then((user) => {
       bcrypt.compare(String(password), user.password)
         .then((isValidUser) => {
