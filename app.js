@@ -8,6 +8,8 @@ const router = require('./routes');
 const { createUser, login } = require('./controllers/users');
 const errorHandler = require('./middlewares/error');
 
+const avatarRegex = /^(http|https):\/\/(www.\.)?[a-zA-z0-9-._~:/?#[\]@!$&'()*+,;=]+$/;
+
 const app = express();
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
@@ -22,7 +24,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().pattern(avatarRegex),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
