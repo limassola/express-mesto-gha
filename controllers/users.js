@@ -46,8 +46,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(401).send({ message: 'Введите данные' });
-    return;
+    return res.status(401).send({ message: 'Введите данные' });
   }
 
   User.findOne({ email })
@@ -69,6 +68,7 @@ const login = (req, res, next) => {
             res.send({ data: user.toJSON() });
           } else {
             res.status(401).send({ message: 'Неправильные данные' });
+            return;
           }
         });
     })
