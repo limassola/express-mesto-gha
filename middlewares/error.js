@@ -3,6 +3,7 @@ const CastError = require('../errors/cast-error');
 const DuplicateError = require('../errors/duplicate-error');
 const JWTError = require('../errors/jwt-error');
 const AbstractError = require('../errors/abstract-error');
+const InvalidAuth = require('../errors/invalid-auth');
 
 const errorHandler = (err, req, res, next) => {
   let error;
@@ -10,6 +11,8 @@ const errorHandler = (err, req, res, next) => {
     error = new NotFoundError(err);
   } else if (err.code === 400) {
     error = new CastError(err);
+  } else if (err.code === 401) {
+    error = new InvalidAuth(err);
   } else if (err.code === 11000) {
     error = new DuplicateError(err);
   } else if (err.code === 409) {
