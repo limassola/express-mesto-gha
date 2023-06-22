@@ -45,7 +45,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(403).send({ message: 'Введите данные' });
+    res.status(401).send({ message: 'Введите данные' });
     return;
   }
 
@@ -67,7 +67,7 @@ const login = (req, res, next) => {
             });
             res.send({ data: user.toJSON() });
           } else {
-            res.status(403).send({ message: 'Неправильные данные' });
+            res.status(401).send({ message: 'Неправильные данные' });
           }
         });
     })

@@ -6,6 +6,7 @@ const AbstractError = require('../errors/abstract-error');
 const InvalidAuth = require('../errors/invalid-auth');
 
 const errorHandler = (err, req, res, next) => {
+  console.log(err.statusCode);
   let error;
   if (err.code === 404) {
     error = new NotFoundError(err);
