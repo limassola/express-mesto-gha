@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/not-found-error');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -7,19 +8,11 @@ const getCards = (req, res) => {
     .catch((err) => res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack }));
 };
 
-const deleteCardByID = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => new Error('Not found'))
+const deleteCardByID = (req, res, next) => {
+  Card.findOneAndRemove({ _id: req.params.cardId, owner: req.user._id })
+    .orFail(() => new NotFoundError('Not found'))
     .then((card) => res.status(200).send(card))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
-      } else if (err.message === 'Not found') {
-        res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
-      } else {
-        res.status(500).send({ message: 'Internal Server Error', err: err.message, stack: err.stack });
-      }
-    });
+    .catch(next);
 };
 
 const createCard = (req, res) => {
