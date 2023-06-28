@@ -3,18 +3,15 @@ const CastError = require('../errors/cast-error');
 const DuplicateError = require('../errors/duplicate-error');
 const InvalidAuth = require('../errors/invalid-auth');
 const AbstractError = require('../errors/abstract-error');
+const ForbiddenError = require('../errors/forbidden-error');
 
 const errorHandler = (err, req, res, next) => {
   let error;
 
-  if (err instanceof NotFoundError) {
+  if (err instanceof NotFoundError || CastError || InvalidAuth || ForbiddenError) {
     error = err;
-  } else if (err instanceof CastError) {
-    error = err;
-  } else if (err instanceof InvalidAuth) {
-    error = err;
-  } else if (err instanceof DuplicateError) {
-    error = err;
+  } else if (err.code === 11000) {
+    error = new DuplicateError(err);
   } else {
     error = new AbstractError(err);
   }

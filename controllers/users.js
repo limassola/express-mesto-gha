@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
 const InvalidAuth = require('../errors/invalid-auth');
+const NotFoundError = require('../errors/not-found-error');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -29,7 +30,7 @@ const createUser = (req, res, next) => {
 const updateUserProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new NotFoundError('Not found'))
     .then((updatedUser) => res.status(200).send(updatedUser))
     .catch(next);
 };
@@ -37,7 +38,7 @@ const updateUserProfile = (req, res, next) => {
 const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new NotFoundError('Not found'))
     .then((updatedUser) => res.status(200).send(updatedUser))
     .catch(next);
 };
@@ -45,9 +46,9 @@ const updateUserAvatar = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    res.status(401).send({ message: 'Введите данные' });
-  }
+  // if (!email || !password) {
+  //   res.status(401).send({ message: 'Введите данные' });
+  // }
 
   User.findOne({ email })
     .select('+password')
@@ -67,7 +68,7 @@ const login = (req, res, next) => {
             });
             res.send({ data: user.toJSON() });
           } else {
-            res.status(401).send({ message: 'Неправильные данные' });
+            next();
           }
         });
     })
