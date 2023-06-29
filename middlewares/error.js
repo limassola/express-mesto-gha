@@ -7,7 +7,6 @@ const ForbiddenError = require('../errors/forbidden-error');
 
 const errorHandler = (err, req, res, next) => {
   let error;
-  console.log(err)
   if (err instanceof NotFoundError || CastError || InvalidAuth || ForbiddenError) {
     error = err;
   } else if (err.code === 11000) {
