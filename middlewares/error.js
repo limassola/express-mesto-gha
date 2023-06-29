@@ -7,10 +7,10 @@ const ForbiddenError = require('../errors/forbidden-error');
 
 const errorHandler = (err, req, res, next) => {
   let error;
-  if (err instanceof NotFoundError || CastError || InvalidAuth || ForbiddenError) {
-    error = err;
-  } else if (err.code === 11000) {
+  if (err.code === 11000) {
     error = new DuplicateError(err);
+  } else if (err instanceof NotFoundError || CastError || InvalidAuth || ForbiddenError) {
+    error = err;
   } else {
     error = new AbstractError(err);
   }
