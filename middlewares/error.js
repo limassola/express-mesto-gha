@@ -4,12 +4,14 @@ const DuplicateError = require('../errors/duplicate-error');
 const InvalidAuth = require('../errors/invalid-auth');
 const AbstractError = require('../errors/abstract-error');
 const ForbiddenError = require('../errors/forbidden-error');
+const InvalidPath = require('../errors/invalid-path-error');
 
 const errorHandler = (err, req, res, next) => {
   let error;
   if (err.code === 11000) {
     error = new DuplicateError(err);
-  } else if (err instanceof NotFoundError || CastError || InvalidAuth || ForbiddenError) {
+  // eslint-disable-next-line max-len
+  } else if (err instanceof NotFoundError || CastError || InvalidAuth || ForbiddenError || InvalidPath) {
     error = err;
   } else {
     error = new AbstractError(err);

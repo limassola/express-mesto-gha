@@ -39,7 +39,7 @@ const likeCard = (req, res, next) => {
       if (card) {
         res.status(200).send(card);
       } else {
-        res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
+        throw new NotFoundError('Карточка с указанным id не найдена');
       }
     })
     .catch(next);
@@ -55,7 +55,7 @@ const dislikeCard = (req, res, next) => {
       if (card) {
         res.status(200).send(card);
       } else {
-        res.status(404).send({ message: ' Карточка с указанным _id не найдена' });
+        throw new NotFoundError('Карточка с указанным id не найдена');
       }
     })
     .catch(next);
