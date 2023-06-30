@@ -13,7 +13,7 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.id)
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new NotFoundError('Not found'))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
@@ -77,7 +77,7 @@ const login = (req, res, next) => {
 
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new NotFoundError('Not found'))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
