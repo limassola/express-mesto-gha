@@ -52,7 +52,7 @@ const login = (req, res, next) => {
 
   User.findOne({ email })
     .select('+password')
-    .orFail(() => new InvalidAuth('Неправильные данные'))
+    .orFail(() => new InvalidAuth())
     .then((user) => {
       bcrypt.compare(String(password), user.password)
         .then((isValidUser) => {
